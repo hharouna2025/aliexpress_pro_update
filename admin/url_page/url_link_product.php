@@ -4,16 +4,15 @@
             extract($_POST);
             extract($_GET);
 
-
-         
             require_once("url_ali_all.php"); 
 
             $array_Ioplient= array();
-
+            $url_link=preg_replace('/[^0-9]/', '',$url_link);
             if($token_type=='ProductGet'):
-            $array_Ioplient= array('ID_URL'=>$url_link);
+            $url_link=preg_replace('/[^0-9]/', '',$url_link);
+            $array_Ioplient= array('ID_URL'=>trim($url_link));
             endif;
-            
+          
             
 
             if(isset($code)):
@@ -42,7 +41,6 @@
                 endif;
 
                      $rs_ali_all = $ali_all->$token_type(); 
-                 // $rs_fee = $ali_all->buyercalculate_shippingfee();        
                 echo $rs_ali_all;
                
             exit;            

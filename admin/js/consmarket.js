@@ -63,7 +63,7 @@ list function active
                         },
                         success:function(resultat){
                                     
-                        this_btn.html('<i class="fa-solid fa-bars"></i>')
+                        this_btn.html('  <i class="fa-solid fa-download"></i> ')
                         $("input#link").removeClass('disabled').val("")
 
                         var all_product="";
