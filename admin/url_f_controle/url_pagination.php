@@ -36,12 +36,13 @@
         
        
         $page=' <div class="container-sm  p-3 rounded"><div class="input-group mb-3">';
-        if($active_==1 ){   
+        if($active_==1 || $active_==0){   
         $d= json_encode($list_update);
         $all_list_up= json_encode($list_update_all);
         $page.=  ' <button type="button" class="btn btn-outline-success update_all"><i class="fa-solid fa-arrows-rotate"></i></button>    
         <select class="form-select form-control update_option" aria-label="Default select example">';
         $page.= "<option selected value='".$d."'  >All Page (".$list_page.")</option>";
+        $page.= "<option selected value='".$all_list_up."'  >All Page (".$list.")</option>";
         $page.= "</select>";      
          }
         $page.='</div>'; 
@@ -53,12 +54,17 @@
         return  $page; 
 }
      function pagination($active_,$p_,$rs_select_account_,$rs_select_sql,$update){
-
+             $list= count($rs_select_account_['fectAll']); 
             $list_page = count($rs_select_sql['fectAll']); 
             foreach($rs_select_sql['fectAll'] as $rs_fe => $_fecthAll){
             $encode = json_encode($_fecthAll['contenu_product']);
             $rs_decode = json_decode($_fecthAll['contenu_product'],true ); 
             $list_update[]= ["id"=>$_fecthAll['id_product'], "woo_id"=>$_fecthAll['id_product_active'], "product"=>$rs_decode['result']['ae_item_base_info_dto']['product_id']]; 
+            }
+            foreach($rs_select_account_['fectAll'] as $rs_fe => $_fecthAll){
+            $encode = json_encode($_fecthAll['contenu_product']);
+            $rs_decode = json_decode($_fecthAll['contenu_product'],true ); 
+            $list_update_all[]= ["id"=>$_fecthAll['id_product'], "woo_id"=>$_fecthAll['id_product_active'], "product"=>$rs_decode['result']['ae_item_base_info_dto']['product_id']]; 
             }
                         $pagination = '';
                         $pagination .= '<div class="btn-group m-2 p-2" role="group" aria-label="">';
@@ -129,17 +135,26 @@
                         $pagination .= '<button type="button" class="btn btn-secondary  n_pagination '.$d.'">Next</button>'; 
                         endif;
 
-                         if($active_==1 && $update==true){   
+                         if($active_==1 || $active_==0 && $update==true){   
+                            if($active_==1){
+                                $type_update="Productupdate";
+                            }else{
+                                $type_update="ProductInsert";
+                            }
              $d= json_encode($list_update);
+            $all_list_up= json_encode($list_update_all);
             $pagination .=  '<button type="button" class="btn btn-outline-success" disabled>-----</button>  '  ;
             $pagination .=' <select class="form-select form-control update_option_page" aria-label="Default select example">';
             $pagination .= "<option selected>Select Update</option> <option value='".$d."'  >All Page (".$list_page.")</option>";
+            $pagination .= " <option value='".$all_list_up."'  >Updated all products (".$list.")</option>";
          
             $pagination .= "</select>";      
-            $pagination .=  '<button type="button" class="btn btn-outline-success update_all_page"><i class="fa-solid fa-arrows-rotate"></i></button>  '  ;
+            $pagination .=  '<button type="button" class="btn btn-outline-success update_all_page" type_update="'.$type_update.'"><i class="fa-solid fa-arrows-rotate"></i></button>  '  ;
 
            
          }
+                $pagination .=  '<button type="button" class="btn btn-outline-success update_all_page form-control" disabled> '.$list.'</button>  '  ;
+
                         $pagination .='</div>';
 
                     return $pagination; 
@@ -306,12 +321,21 @@
             $page.= '<div class="card-footer text-center bg-default rounded shadow-sm">
             <div class="btn-group text-center" role="group" aria-label="Basic mixed styles example">';
             if($_fecthAll['active']!=1){
-
-            $page.= '<button type="button" class="btn btn-primary btn-sm control-form active_product"  id_p="'.$_fecthAll['id_product'].'" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'"  product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-check"></i></button>';
+            if($_fecthAll['active']==1){
+            $type_update="Productupdate";
+            }else{
+            $type_update="ProductInsert";
+            }
+            $page.= '<button type="button" class="btn btn-primary btn-sm control-form active_product" type_update="'.$type_update.'"  id_p="'.$_fecthAll['id_product'].'" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'"  product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-check"></i></button>';
             }
 
             if($_fecthAll['active']==1){
-            $page.='<button type="button" class="btn btn-success btn-sm control-form all_update_product" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" id_p="'.$_fecthAll['id_product'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-arrows-rotate"></i></button>';
+                 if($_fecthAll['active']==1){
+                                $type_update="Productupdate";
+                            }else{
+                                $type_update="ProductInsert";
+                            }
+            $page.='<button type="button" class="btn btn-success btn-sm control-form all_update_product" type_update="'.$type_update.'" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" id_p="'.$_fecthAll['id_product'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-arrows-rotate"></i></button>';
             $page.='<button type="button" class="btn btn-default btn-sm control-form consult_product" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-regular fa-pen-to-square"></i></button>';
             }
             $page.='  <button type="button" class="btn btn-warning btn-sm control-form edit_product" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-bars"></i></button>

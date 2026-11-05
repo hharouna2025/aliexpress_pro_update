@@ -41,9 +41,9 @@ public function css_js(){
 
 public function url_new(){
             $return_page = $this->modal();
-            $return_page .= $this->div_start_contenu();
+          //  $return_page .= $this->div_start_contenu();
             $return_page .= $this->all_nav_parametter();
-            $return_page .= $this->div_end_contenu();
+           // $return_page .= $this->div_end_contenu();
 
             return $return_page; 
  }
@@ -204,7 +204,7 @@ public function contenu_page($rs_fetchall_select,$rs_fetchall_count,$active_,$p_
             //$rs=json_encode($dede);
             $exploid_image = explode(";", $rs_decode['result']['ae_multimedia_info_dto']['image_urls']);
             $count_image = count($exploid_image);
-            $page.='<div class="col card'.$_fecthAll['id_product'].'"><div class="card">
+            $page.='<div class="col card'.$_fecthAll['id_product'].'"><div class="card update'.$_fecthAll['id_product'].' shadow-sm mt-3 mb-2 bg-light rounded">
             <div id="carouselExampleDark'.$_fecthAll['id_product'].'" class="carousel carousel-dark slide">'; 
             $page.= '<div class="carousel-indicators">';
             for($n=0; $n<$count_image; $n++){
@@ -259,10 +259,20 @@ public function contenu_page($rs_fetchall_select,$rs_fetchall_count,$active_,$p_
             <div class="btn-group text-center" role="group" aria-label="Basic mixed styles example">';
 
             if($_fecthAll['active']!=1){
-            $page.= '<button type="button" class="btn btn-primary btn-sm control-form active_product"  id_p="'.$_fecthAll['id_product'].'" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'"  product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-check"></i></button>';
+                    if($_fecthAll['active']==1){
+                                $type_update="Productupdate";
+                            }else{
+                                $type_update="ProductInsert";
+                            }
+            $page.= '<button type="button" class="btn btn-primary btn-sm control-form active_product" type_update="'.$type_update.'"  id_p="'.$_fecthAll['id_product'].'" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'"  product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-check"></i></button>';
             }
             if($_fecthAll['active']==1){
-            $page.='<button type="button" class="btn btn-success btn-sm control-form all_update_product" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" id_p="'.$_fecthAll['id_product'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-arrows-rotate"></i></button>';
+ if($_fecthAll['active']==1){
+                                $type_update="Productupdate";
+                            }else{
+                                $type_update="ProductInsert";
+                            }
+            $page.='<button type="button" class="btn btn-success btn-sm control-form all_update_product"   type_update="'.$type_update.'" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" id_p="'.$_fecthAll['id_product'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-arrows-rotate"></i></button>';
             $page.='<button type="button" class="btn btn-default btn-sm control-form consult_product" id_product_woo="'.$_fecthAll['id_product_active'].'" active="'.$_fecthAll['active'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-regular fa-pen-to-square"></i></button>';
 
             }
@@ -285,6 +295,12 @@ public function contenu_page($rs_fetchall_select,$rs_fetchall_count,$active_,$p_
 
 public function search_fun($rs_fetchall_select,$rs_fetchall_count,$active_,$p_){
 
+            $list_all= count($rs_fetchall_select['fectAll']); 
+            foreach($rs_fetchall_select['fectAll'] as $rs_fe => $_fecthAll){
+            $encode = json_encode($_fecthAll['contenu_product']);
+            $rs_decode = json_decode($_fecthAll['contenu_product'],true ); 
+            $list_update[]= ["id"=>$_fecthAll['id_product'], "woo_id"=>$_fecthAll['id_product_active'], "product"=>$rs_decode['result']['ae_item_base_info_dto']['product_id']]; 
+            }
             $list= count($rs_fetchall_count['fectAll']); 
             foreach($rs_fetchall_count['fectAll'] as $rs_fe => $_fecthAll){
             $encode = json_encode($_fecthAll['contenu_product']);
@@ -293,17 +309,22 @@ public function search_fun($rs_fetchall_select,$rs_fetchall_count,$active_,$p_){
             }
         
         $page='  <div class="container-sm shadow-sm mb-2 bg-light rounded">';
-        $page.=' <div class="container-sm shadow-sm p-3 mt-2 rounded"><i class="fa-solid fa-barcode"></i>  Product upload on aliexpress.us : '.$list.'</div></br>'; 
         $page.=' <div class="container-sm  p-3 rounded"><div class="input-group mb-3">';
-       
-        if($active_==1 ){   
-        
+       /*
+        if($active_==1 || $active_==0){   
+            if($active_==1){
+                                $type_update="Productupdate";
+                            }else{
+                                $type_update="ProductInsert";
+                            }
         $all_list_up= json_encode($list_update_all);
+        $all_list= json_encode($list_update);
         $page.=  ' <button type="button" class="btn btn-outline-success update_all"><i class="fa-solid fa-arrows-rotate"></i></button>    
         <select class="form-select form-control update_option" aria-label="Default select example">
         <option selected>Select Update</option>';
-        $page.=  "<option value='".$all_list_up."'>All Product (".$list.")</option> </select>";      
-         }
+        $page.=  "<option value='".$all_list_up."'>All Product (".$list.")</option> ";      
+        $page.=  "<option value='".$all_list."'>Selected Product (".$list_all.")</option> </select>";      
+         }*/
         $page.=' <input type="text" class="form-control search_product_input" active="'.$active_.'" placeholder="Search Product "   aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
         <button type="button" class="btn btn-outline-secondary search_product" active="'.$active_.'"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>'; 
@@ -319,12 +340,17 @@ public function search_fun($rs_fetchall_select,$rs_fetchall_count,$active_,$p_){
         return  $page; 
 }
 public function pagination($active_,$p_,$rs_select_account_,$rs_select_sql,$update){
-
+            $list= count($rs_select_account_['fectAll']); 
             $list_page = count($rs_select_sql['fectAll']); 
             foreach($rs_select_sql['fectAll'] as $rs_fe => $_fecthAll){
             $encode = json_encode($_fecthAll['contenu_product']);
             $rs_decode = json_decode($_fecthAll['contenu_product'],true ); 
             $list_update[]= ["id"=>$_fecthAll['id_product'], "woo_id"=>$_fecthAll['id_product_active'], "product"=>$rs_decode['result']['ae_item_base_info_dto']['product_id']]; 
+            }
+             foreach($rs_select_account_['fectAll'] as $rs_fe => $_fecthAll){
+            $encode = json_encode($_fecthAll['contenu_product']);
+            $rs_decode = json_decode($_fecthAll['contenu_product'],true ); 
+            $list_update_all[]= ["id"=>$_fecthAll['id_product'], "woo_id"=>$_fecthAll['id_product_active'], "product"=>$rs_decode['result']['ae_item_base_info_dto']['product_id']]; 
             }
                         $pagination = '';
                         $pagination .= '<div class="btn-group m-2 p-2" role="group" aria-label="">';
@@ -395,19 +421,27 @@ public function pagination($active_,$p_,$rs_select_account_,$rs_select_sql,$upda
                         $pagination .= '<button type="button" class="btn btn-secondary  n_pagination '.$d.'">Next</button>'; 
                         endif;
 
-                         if($active_==1  && $update==true){   
+              if($active_==1 || $active_==0 && $update==true){   
+                            if($active_==1){
+                                $type_update="Productupdate";
+                            }else{
+                                $type_update="ProductInsert";
+                            }
              $d= json_encode($list_update);
-            
+            $all_list_up= json_encode($list_update);
             $pagination .=  '<button type="button" class="btn btn-outline-success" disabled>-----</button>  '  ;
             $pagination .=' <select class="form-select form-control update_option_page" aria-label="Default select example">';
             $pagination .= "<option selected>Select Update</option> <option value='".$d."'  >All Page (".$list_page.")</option>";
+            $pagination .= " <option value='".$all_list_up."'  >Updated all products (".$list.")</option>";
          
             $pagination .= "</select>";      
-            $pagination .=  '<button type="button" class="btn btn-outline-success update_all_page"><i class="fa-solid fa-arrows-rotate"></i></button>  '  ;
+            $pagination .=  '<button type="button" class="btn btn-outline-success update_all_page" type_update="'.$type_update.'"><i class="fa-solid fa-arrows-rotate"></i></button>  '  ;
 
            
          }
-                        $pagination .='</div>';
+                $pagination .=  '<button type="button" class="btn btn-outline-success update_all_page form-control" disabled> '.$list.'</button>  '  ;
+
+                $pagination .='</div>';
 
                     return $pagination; 
             }

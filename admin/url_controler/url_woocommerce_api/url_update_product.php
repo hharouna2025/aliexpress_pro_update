@@ -30,9 +30,11 @@
             $url_update_product->brands_other_attributes();
             $url_update_product->attributes_default();
             $url_update_product->meta_donnes();
-            $url_update_product->add_single_product() ; 
-      
-            if(isset($id_product_woo)){
+            $url_update_product->add_single_product(); 
+ 
+
+     if($type_update=="Productupdate"){
+            if(isset($id_product_woo)&&isset($product)){
                 $url_update_product->put_data();
                 if(isset($url_update_product->list_variation)):
                       $url_update_product->variation_put_data();
@@ -41,7 +43,37 @@
                       $url_update_product->variation_post_data();
                 echo  json_encode(array('code'=>200));
                 endif; 
-           
-            }  
-            exit; 
+           exit; 
+           }
+            }// fin partie update product
+       
+     //----- starts new product
+            if($type_update=="ProductInsert"){
+                if(isset($product)&&empty($id_product_woo)){
+
+                    $rs_update=  $url_update_product->update_product();
+                    $result_update = json_decode($rs_update);
+                    if( $result_update->{'code'}==200){   
+
+                    $rs_echo =  json_encode(array('code'=>200,'msg'=>'Product updated successfully','url_edit'=>'https://'.$_SERVER['SERVER_NAME'].'/wp-admin/post.php?post='.$url_update_product->woo_id.'&action=edit')); 
+
+                    } elseif( $result_update->{'code'}==500){
+
+                    $post_value=  $url_update_product->post_data() ;
+
+                    if(isset( $url_update_product->woo_id)){
+
+                    $url_update_product->variation_post_data();
+                    $rs_echo = json_encode(array('code'=>200, 'url_edit'=>'https://'.$_SERVER['SERVER_NAME'].'/wp-admin/post.php?post='.$url_update_product->woo_id.'&action=edit'));
+                    }else{
+                    $rs_echo = json_encode(array('code'=>500, 'msg'=>'error')); 
+                    }
+
+                    } 
+
+                echo $post_value;
+                exit;
+            } 
+        }
+        
 ?>

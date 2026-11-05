@@ -51,7 +51,7 @@ list function active
                         })
                      }, 
 
-                        "link": function url_link($url_link, $token,this_btn){
+                        "link": function url_link($url_link, $token,this_btn,font_type){
                         $.ajax({
                         method: "POST",
                         url: "/wp-content/plugins/consmarket-llc/admin/url_page/url_link_product.php",
@@ -63,7 +63,7 @@ list function active
                         },
                         success:function(resultat){
                                     
-                        this_btn.html('  <i class="fa-solid fa-download"></i> ')
+                        this_btn.html( font_type )
                         $("input#link").removeClass('disabled').val("")
 
                         var all_product="";
@@ -82,12 +82,12 @@ list function active
 							  
 
 					},
-                       'all_update_sync':function envoyerRequete(woo_id,id,product,btn_this) {
+                       'all_update_sync':function envoyerRequete(woo_id,id,product,btn_this,type_update_val) {
                             return $.ajax({
                                 method: "POST",
                                 url: "/wp-content/plugins/consmarket-llc/admin/url_controler/url_woocommerce_api/url_update_product.php",
                                 dataType:"json",
-                                data: {id_product_woo:woo_id,id_product_active:id,product:product},
+                                data: {id_product_woo:woo_id,id_product_active:id,product:product,type_update:type_update_val},
                                 statusCode: {
                                 500: function() {
 
@@ -106,18 +106,26 @@ list function active
 
                                 },
                                 success:function(resultat){
-                                    if(resultat['code']==200){
-                            //$('#exampleModalToggle').modal('show'); 
-                                // $("div.progress").html('<div class="alert alert-success " role="alert">Update  Successfully</div>' )
-                                    $("div.update"+id).addClass("border border-success shadow-lg m-0")
-                                
-                                
+                            if(resultat['code']==200){
+                                 if(type_update_val=="Productupdate"){
+                               
+                                $("div.update"+id).addClass("border border-success shadow-lg m-0")
+                                btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
+
+                                }else if(type_update_val=="ProductInsert"){
+                                var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
+                                myModal.show();  
+                           
+                                 fun.list_product_active(0); 
+                            
+
+                                }
                                     }
                                 }
                             })
                             
                         },
-                    "all_update":async function envoyerEnSequence(tableau,n_this) {
+                    "all_update":async function envoyerEnSequence(tableau,n_this,type_update) {
                         console.log("Début de l'envoi séquentiel...");
 
                         for (const [key, value] of tableau.entries()) {
@@ -125,15 +133,13 @@ list function active
                         console.log("Envoi en cours pour l'élément:"+ value.id);
 
                         // Attend la réponse AJAX avant de continuer la boucle
-                        const reponse = await fun.all_update_sync(value.woo_id,value.id,value.product,n_this); 
+                        const reponse = await fun.all_update_sync(value.woo_id,value.id,value.product,n_this,type_update); 
                         var progress= ((key+1)*100)/tableau.length
                         $("div.progress").attr('aria-valuenow',progress); 
-                       
                         $("div.progress-bar").attr("style","width:"+progress+"%").html(progress.toFixed(2)+"%"); 
-
-
                         console.log("Succès pour l'élément"+value.id+' Réponse :'+ reponse +"----"+progress);
                         } catch (erreur) {
+
                         console.error("Échec pour l'élément"+ value.id+"Erreur :"+ erreur);
                         // Optionnel : vous pouvez ajouter un 'break;' ici si vous voulez stopper 
                         // tout le processus dès qu'une requête échoue.
@@ -142,43 +148,45 @@ list function active
 
                         n_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
                         },
-                    "all_update_product":function all_product_woo_product(id_product_woo,id_product_active,product,btn_this){
+                    "all_update_product":function all_product_woo_product(id_product_woo,id_product_active,product,btn_this,type_update){
 
 						$.ajax({
 
 							method: "POST",
 							url: "/wp-content/plugins/consmarket-llc/admin/url_controler/url_woocommerce_api/url_update_product.php",
 							dataType:"json",
-							data: {id_product_woo:id_product_woo,id_product_active:id_product_active,product:product},
-						
-							    statusCode: {
-                                500: function() {
+							data: {id_product_woo:id_product_woo,id_product_active:id_product_active,product:product,type_update:type_update},
+                            statusCode: {
+                            500: function() {
 
-                              var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
-                               myModal.show(); 
-                                $("div.modal-body").html("This product can't function or is already exist in the databass!!!  </br>"+
-                                "Try again if is't pass, delete the product on the list and add again on the list Thank you. </br>" +
-                                'Delete The product <button type="button" class="btn btn-danger btn-sm control-form delete_product"  id_p="'+id_p+'"  product="'+product_id_ali+'"><i class="fa-solid fa-trash"></i></button>' )
+                            var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
+                            myModal.show(); 
+                            $("div.modal-body").html("This product can't function or is already exist in the databass!!!  </br>"+
+                            "Try again if is't pass, delete the product on the list and add again on the list Thank you. </br>" +
+                            'Delete The product <button type="button" class="btn btn-danger btn-sm control-form delete_product"  id_p="'+id_p+'"  product="'+product_id_ali+'"><i class="fa-solid fa-trash"></i></button>' )
 
-                                btn_this.html('<i class="fa-solid fa-check"></i>').removeClass('disabled');
-                                }
-                               
-                                },
+                            btn_this.html('<i class="fa-solid fa-check"></i>').removeClass('disabled');
+                            }
+
+                            },
 							beforeSend:function(){
                                btn_this.html(css_animation.spinner).addClass('disabled');
                                 
 							},
 							success:function(resultat){
-                                if(resultat['code']==200){
 
-                                var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
-                               myModal.show();  
-                                $("div.modal-body").html('<div class="alert alert-success " role="alert">Update  Successfully</div>' )
+                                if(resultat['code']==200){
+                            if(type_update=="Productupdate"){
                                 $("div.update"+id_product_active).addClass("border border-success shadow-lg m-0")
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
-                           
-                             }
-							}
+
+                                }else if(type_update=="ProductInsert"){
+    
+                                    fun.list_product_active(0);  
+                                }
+                          }
+                        
+                        }
 						 })
                     },
                     "delete": function url_delete($url_link, id_p , $token,d_this){
@@ -536,7 +544,7 @@ list function active
 				// Add additional data to Heartbeat data.
 				var $val_link= $("input#link").val(); 
 				var $btn_this=$(this)
-				fun.link($val_link,"ProductGet",$btn_this); 
+				fun.link($val_link,"ProductGet",$btn_this,'<i class="fa-solid fa-download"></i> Download'); 
 
 	
 			});
@@ -564,7 +572,7 @@ list function active
 				// function pagination
 				var attr_product = $(this).attr('product');
                 var btn_this= $(this)
-				fun.link(attr_product,"ProductGet",btn_this);   
+				fun.link(attr_product,"ProductGet",btn_this,' <i class="fa-solid fa-bars"></i> ');   
 			});    
             $(document).on( 'click','button.consult_product', function ( ) {
 				// function pagination
@@ -591,10 +599,17 @@ list function active
 
             $(document).on( 'click','button.active_product', function ( ) {
             // function pagination
-            var attr_product = $(this).attr('product');
+          /*  var attr_product = $(this).attr('product');
             var attr_id_p = $(this).attr('id_p');
             var ac_this =$(this);  
             fun.add_product_woo(attr_product,attr_id_p,ac_this);   
+                */
+             // function active or inactive product 
+            var attr_this = $(this);
+            var attr_id_product_woo = $(this).attr('id_product_woo')
+            var attr_id_product_active= $(this).attr('id_p');
+            var attr_product= $(this).attr('product');
+            fun.all_update_product(attr_id_product_woo,attr_id_product_active,attr_product,attr_this,"ProductInsert" );
             });
 
             $(document).on( 'click','button.update_categories', function ( ) {
@@ -611,27 +626,30 @@ list function active
              $(document).on( 'click','button.all_update_product', function ( ) {
             // function active or inactive product 
             var attr_this = $(this);
+            var attr_type_update = $(this).attr('type_update');
             var attr_id_product_woo = $(this).attr('id_product_woo')
             var attr_id_product_active= $(this).attr('id_p');
             var attr_product= $(this).attr('product');
-            fun.all_update_product(attr_id_product_woo,attr_id_product_active,attr_product,attr_this );   
+            fun.all_update_product(attr_id_product_woo,attr_id_product_active,attr_product,attr_this,attr_type_update );
             });
 
            $(document).on( 'click','button.update_all', function ( ) {
             // function active or inactive product 
             var attr_this = $(this);
+            var attr_type_update = $(this).attr('type_update');
             var attr_option =  $('select.update_option option:selected').val()
             var obj = jQuery.parseJSON( attr_option  );
             var count_obj = obj.length
-            fun.all_update(obj,attr_this);
+            fun.all_update(obj,attr_this,attr_type_update);
             });
- $(document).on( 'click','button.update_all_page', function ( ) {
+            $(document).on( 'click','button.update_all_page', function ( ) {
             // function active or inactive product 
             var attr_this = $(this);
+            var attr_type_update = $(this).attr('type_update');
             var attr_option =  $('select.update_option_page option:selected').val()
             var obj = jQuery.parseJSON( attr_option  );
             var count_obj = obj.length
-            fun.all_update(obj,attr_this);
+            fun.all_update(obj,attr_this,attr_type_update);
             });
 
             $(document).on( 'click','button.product_status', function ( ) {
