@@ -113,7 +113,8 @@ list function active
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
 
                                 }else if(type_update_val=="ProductInsert"){
-                               
+                                var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
+                                myModal.show();  
                                 $('div.update'+id).addClass("border border-success shadow-lg m-0")
                                 $('div.card'+id).fadeOut(3000, "linear").remove()
                                  //fun.list_product_active(0); 
