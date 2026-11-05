@@ -115,8 +115,9 @@ list function active
                                 }else if(type_update_val=="ProductInsert"){
                                 var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
                                 myModal.show();  
-                           
-                                 fun.list_product_active(0); 
+                                $('div.update'+id).addClass("border border-success shadow-lg m-0")
+                                $('div.card'+id).fadeOut(3000, "linear").remove()
+                                 //fun.list_product_active(0); 
                             
 
                                 }
@@ -144,9 +145,11 @@ list function active
                         // Optionnel : vous pouvez ajouter un 'break;' ici si vous voulez stopper 
                         // tout le processus dès qu'une requête échoue.
                         }
-                        }
 
-                        n_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
+                        }
+                        
+                        fun.list_product_active(0); 
+                       // n_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
                         },
                     "all_update_product":function all_product_woo_product(id_product_woo,id_product_active,product,btn_this,type_update){
 
@@ -181,8 +184,8 @@ list function active
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
 
                                 }else if(type_update=="ProductInsert"){
-    
-                                    fun.list_product_active(0);  
+                                    $('div.card'+id_product_active).addClass("border border-success shadow-lg m-0").fadeOut(6000,"slow").remove()
+                                  //  fun.list_product_active(0);  
                                 }
                           }
                         
