@@ -593,8 +593,8 @@ public function variation_post_data(){
              
                 
                 
-                $val_variable = ''; 
-                            $rs_data_json = '';
+                    $val_variable = ''; 
+                    $rs_data_json = '';
      for($v=0;$v<$c_n_variation; $v++){
 
                         $parse_url= parse_url($v_inser[$v]['ae_sku_property_dtos']['ae_sku_property_d_t_o'][0]['sku_image']); 

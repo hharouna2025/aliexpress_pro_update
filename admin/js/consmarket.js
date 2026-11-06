@@ -1,22 +1,6 @@
 jQuery( document ).ready( function ($) {
 	
 
-/*
-list function active
-
-*/
-
-/*
-        const triggerTabList = document.querySelectorAll('#myTab button')
-        triggerTabList.forEach(triggerEl => {
-        const tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', event => {
-        event.preventDefault()
-        tabTrigger.show()
-        })
-        })
-*/
             $('#myTab button').on('click', function (e) {
                     e.preventDefault();
                     $(this).tab('show');
@@ -70,16 +54,16 @@ list function active
                         all_product+=fun.ae_item_base_info_dto(resultat['rs_product']['result']['ae_item_base_info_dto'],resultat['woo_id'] ,resultat['id_product'],resultat['active'])
                         all_product+=fun.ae_multimedia_info_dto(resultat['rs_product']['result'])
                         all_product+=fun.ae_item_sku_info_d_t_o(resultat['rs_product']['result']['ae_item_sku_info_dtos']['ae_item_sku_info_d_t_o'])
-                 
-                       var myModal = new bootstrap.Modal($('#exampleModalToggle'));
-                              myModal.show(); 
+
+                        var myModal = new bootstrap.Modal($('#exampleModalToggle'));
+                        myModal.show(); 
                         $("div.modal-body").html(all_product)
-                            if(resultat['active']==0){
+                        if(resultat['active']==0){
                         fun.list_product_active(resultat['active']);   
-                               }
+                        }
                         }
                         })
-							  
+
 
 					},
                        'all_update_sync':function envoyerRequete(woo_id,id,product,btn_this,type_update_val) {
@@ -91,12 +75,6 @@ list function active
                                 statusCode: {
                                 500: function() {
 
-                               var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
-                               myModal.show(); 
-                                $("div.modal-body").html("This product can't function or is already exist in the databass!!!  </br>"+
-                                "Try again if is't pass, delete the product on the list and add again on the list Thank you. </br>" +
-                                'Delete The product <button type="button" class="btn btn-danger btn-sm control-form delete_product"  id_p="'+id_p+'"  product="'+product_id_ali+'"><i class="fa-solid fa-trash"></i></button>' )
-                                $("div.update"+id).addClass("border border-danger shadow-lg m-0")
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
                                 }
 
@@ -106,21 +84,22 @@ list function active
 
                                 },
                                 success:function(resultat){
-                            if(resultat['code']==200){
+                            if(resultat['code']==200 && type_update_val=="Productupdate" ){
                                  if(type_update_val=="Productupdate"){
                                
                                 $("div.update"+id).addClass("border border-success shadow-lg m-0")
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
 
-                                }else if(type_update_val=="ProductInsert"){
-                                var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
-                                myModal.show();  
+                                }else if(type_update_val=="ProductInsert" && resultat['code']==200 ){
+                               
                                 $('div.update'+id).addClass("border border-success shadow-lg m-0")
-                                $('div.card'+id).fadeOut(3000, "linear").remove()
+                             
                                  //fun.list_product_active(0); 
                             
 
                                 }
+                                    }else{
+
                                     }
                                 }
                             })
@@ -138,16 +117,16 @@ list function active
                         var progress= ((key+1)*100)/tableau.length
                         $("div.progress").attr('aria-valuenow',progress); 
                         $("div.progress-bar").attr("style","width:"+progress+"%").html(progress.toFixed(2)+"%"); 
+                        $('div.card'+value.id).fadeOut(10, "linear").remove()
                         console.log("Succès pour l'élément"+value.id+' Réponse :'+ reponse +"----"+progress);
                         } catch (erreur) {
-
                         console.error("Échec pour l'élément"+ value.id+"Erreur :"+ erreur);
                         // Optionnel : vous pouvez ajouter un 'break;' ici si vous voulez stopper 
                         // tout le processus dès qu'une requête échoue.
                         }
 
                         }
-                        
+                        $("div.progress-bar").attr("style","width:0%").html(""); 
                         fun.list_product_active(0); 
                        // n_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
                         },
@@ -162,12 +141,6 @@ list function active
                             statusCode: {
                             500: function() {
 
-                            var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
-                            myModal.show(); 
-                            $("div.modal-body").html("This product can't function or is already exist in the databass!!!  </br>"+
-                            "Try again if is't pass, delete the product on the list and add again on the list Thank you. </br>" +
-                            'Delete The product <button type="button" class="btn btn-danger btn-sm control-form delete_product"  id_p="'+id_p+'"  product="'+product_id_ali+'"><i class="fa-solid fa-trash"></i></button>' )
-
                             btn_this.html('<i class="fa-solid fa-check"></i>').removeClass('disabled');
                             }
 
@@ -178,18 +151,20 @@ list function active
 							},
 							success:function(resultat){
 
-                                if(resultat['code']==200){
-                            if(type_update=="Productupdate"){
+                            if(resultat['code']==200){
+                                if(type_update=="Productupdate"){
+
                                 $("div.update"+id_product_active).addClass("border border-success shadow-lg m-0")
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
 
                                 }else if(type_update=="ProductInsert"){
-                                    $('div.card'+id_product_active).addClass("border border-success shadow-lg m-0").fadeOut(6000,"slow").remove()
-                                  //  fun.list_product_active(0);  
+
+                                $('div.card'+id_product_active).addClass("border border-success shadow-lg m-0").fadeOut(10,"linear").remove()
+                                //  fun.list_product_active(0);  
                                 }
-                          }
-                        
-                        }
+                            }
+
+                            }
 						 })
                     },
                     "delete": function url_delete($url_link, id_p , $token,d_this){
