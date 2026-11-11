@@ -30,12 +30,15 @@
             $url_update_product->brands_other_attributes();
             $url_update_product->attributes_default();
             $url_update_product->meta_donnes();
+            $url_update_product->up_im_brands_cate();
             $url_update_product->add_single_product(); 
  
 
      if($type_update=="Productupdate"){
             if(isset($id_product_woo)&&isset($product)){
-                $url_update_product->put_data();
+
+           $url_update_product->put_data();
+              
                 if(isset($url_update_product->list_variation)):
                       $url_update_product->variation_put_data();
                 echo  json_encode(array('code'=>200));
@@ -59,11 +62,11 @@
 
                     } elseif( $result_update->{'code'}==500){
 
-                    $post_value=  $url_update_product->post_data() ;
+                    $url_update_product->post_data() ;
 
                     if(isset( $url_update_product->woo_id)){
 
-                    $url_update_product->variation_post_data();
+                    $post_value=$url_update_product->variation_post_data();
                     $rs_echo = json_encode(array('code'=>200, 'url_edit'=>'https://'.$_SERVER['SERVER_NAME'].'/wp-admin/post.php?post='.$url_update_product->woo_id.'&action=edit'));
                     }else{
                     $rs_echo = json_encode(array('code'=>500, 'msg'=>'error')); 

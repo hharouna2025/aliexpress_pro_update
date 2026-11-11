@@ -17,6 +17,7 @@ public function __construct($token,$code)
 public function contenu($rs_select_,$rs_select_count_,$ac_,$p_page_){
 
         $return_page = $this->modal();
+        $return_page .= $this->Toast();
         $return_page .= $this->css_js();
         $return_page .= $this->div_start_contenu();//-start 
         $return_page .= $this->all_nav_parametter(); 
@@ -59,6 +60,38 @@ public function div_end_contenu(){
 
     return $page_end; 
 }
+public function Toast(){
+
+   $toast= '
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <button type="button" class="btn-close " data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message.
+    </div>
+  </div>
+</div>';
+
+ $toast.= '<div aria-live="polite" aria-atomic="true" class="bg-body-secondary position-relative bd-example-toasts rounded-3">
+  <div class="toast-container p-3" id="toastPlacement">
+    <div class="toast">
+      <div class="toast-header">
+        <img src="..." class="rounded me-2" alt="...">
+        <strong class="me-auto">Bootstrap</strong>
+        <small>11 mins ago</small>
+      </div>
+      <div class="toast-body">
+        Hello, world! This is a toast message.
+      </div>
+    </div>
+  </div>
+</div>';
+return  $toast; 
+}
+
+
 
 public function modal(){
 

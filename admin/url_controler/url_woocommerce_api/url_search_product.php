@@ -128,7 +128,7 @@
             }
 
             if( $rs_product['active']==1){
-            $page.='<button type="button" class="btn btn-success btn-sm control-form all_update_product" id_product_woo="'. $rs_product['id_product_active'].'" active="'. $rs_product['active'].'" id_p="'. $rs_product['id_product'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-arrows-rotate"></i></button>';
+            $page.='<button type="button" class="btn btn-success btn-sm control-form all_update_product" id_product_woo="'. $rs_product['id_product_active'].'" active="'. $rs_product['active'].'" id_p="'. $rs_product['id_product'].'" type_update="Productupdate" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-arrows-rotate"></i></button>';
             $page.='<button type="button" class="btn btn-default btn-sm control-form consult_product" id_product_woo="'. $rs_product['id_product_active'].'" active="'. $rs_product['active'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-regular fa-pen-to-square"></i></button>';
             }
             $page.='  <button type="button" class="btn btn-warning btn-sm control-form edit_product" id_product_woo="'. $rs_product['id_product_active'].'" active="'. $rs_product['active'].'" product="'.$rs_decode['result']['ae_item_base_info_dto']['product_id'].'"><i class="fa-solid fa-bars"></i></button>

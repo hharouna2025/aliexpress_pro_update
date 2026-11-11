@@ -14,8 +14,8 @@ function add_theme_scripts() {
 
 
 	wp_enqueue_script( 'jquery', plugins_url(). '/consmarket-llc/admin/js/jquery.js', array( 'jquery' ));
-	wp_enqueue_script( 'consmarket', plugins_url(). '/consmarket-llc/admin/js/consmarket.js', array( 'jquery' ));
 	wp_enqueue_script( 'bootstrap.bundle.min', plugins_url(). '/consmarket-llc/admin/css/bootstrap/assets/dist/js/bootstrap.bundle.min.js', array( 'jquery' ));
+	wp_enqueue_script( 'consmarket', plugins_url(). '/consmarket-llc/admin/js/consmarket.js', array( 'jquery' ));
 	wp_enqueue_script( 'all', plugins_url(). '/consmarket-llc/admin/css/fontawesome/js/all.js', array( 'jquery' ));
     
 

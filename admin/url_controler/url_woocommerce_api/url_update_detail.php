@@ -489,7 +489,7 @@ public function up_im_brands_cate(){
                 $d_brands= json_decode($s_brands);
                 $rs_breat=$this->woocommerce->put('products/brands/'.$d_brands->{'id'}, $this->image_brands);
 
-  return json_encode($this->brandname); 
+  return json_encode(array("Brand"=>$this->brandname,"Images_brand"=>$this->image_brands,"Images_cate"=>$this->image_categories)); 
 
 }
 
@@ -509,6 +509,8 @@ public function add_single_product(){
                             $this->data_single_product = [
                                 'name' => $this->short,
                                 'type' => 'variable',
+                                'status'=>'publish',
+                                'catalog_visibility'=>'visible',
                                 'description' => $this->desc,
                                 'short_description' => $this->short,
                                 'sku'=>$this->product_id,
@@ -520,6 +522,8 @@ public function add_single_product(){
                                 'categories'=>$this->categories,
                                 'manage_stock'=>true,
                                 'stock_quantity'=>$this->sku_available_stock,
+                                'stock_status'=>'instock',
+                                'backorders'=>'yes',
                                 'tags'=>$this->brandname,
                                 'brands'=>$this->brandname,
                                 'weight'=>$this->weight,
@@ -528,51 +532,56 @@ public function add_single_product(){
                                 'default_attributes' =>   $this->default_attributes,
                                 'meta_data'=> $this->meta_donne_           
                             ];
-
+ 
              return json_encode($this->data_single_product) ; 
 }
   
 public function post_data(){
 
 
-            $this->data_single_product =  $this->data_single_product+array('images'=> $this->array_image_un); 
-           $rs_result = json_encode($this->woocommerce->post('products/', $this->data_single_product)); // insertion des donnees .
-          
-            $this->rs_post_data= json_decode($rs_result);
-            $this->id_product_image=$this->rs_post_data->{'images'};
+                $this->data_single_product =  $this->data_single_product+array('images'=> $this->array_image_un); 
+                $rs_result = json_encode($this->woocommerce->post('products/', $this->data_single_product)); // insertion des donnees .
 
-            // $this->list_variation =$this->rs_post_data->{'variations'}; // variations
-            $this->woo_id =$this->rs_post_data->{'id'}; // idenfiant du product complement pour la variable
-            $id_product_attributes =$this->rs_post_data->{'attributes'}; // idenfiant du product complement pour la variable
-           
-            $this->encode_product_attributes = json_encode($id_product_attributes[0]);//color attributes 
-            $this->encode_product_attributes_size = json_encode($id_product_attributes[1]);//attributes sizes
-    return    json_encode($rs_result); 
+                $this->rs_post_data= json_decode($rs_result);
+                $this->id_product_image=$this->rs_post_data->{'images'};
+
+                // $this->list_variation =$this->rs_post_data->{'variations'}; // variations
+                $this->woo_id =$this->rs_post_data->{'id'}; // idenfiant du product complement pour la variable
+                $id_product_attributes =$this->rs_post_data->{'attributes'}; // idenfiant du product complement pour la variable
+
+                $this->encode_product_attributes = json_encode($id_product_attributes[0]);//color attributes 
+                $this->encode_product_attributes_size = json_encode($id_product_attributes[1]);//attributes sizes
+                return    json_encode($rs_result); 
 }
 
 public function put_data(){
 
-                $get_product =$this->woocommerce->get('products',['sku'=>$this->product_id]);
-                //  $rs_decode_product= json_decode($product);
-                $rs_image_count= count($get_product[0]->{'images'});
-                if($rs_image_count==0){
-                $this->data_single_product =  $this->data_single_product+['images'=> $this->array_image_un]; 
-                }
+            $get_product =$this->woocommerce->get('products',['sku'=>$this->product_id]);
 
-                $this->rs_put_data =json_encode($this->woocommerce->put('products/'.$this->woo_id, $this->data_single_product)); // insertion des donnees .
-                $rs_decode_data = json_decode( $this->rs_put_data);
-                $id_product_insert =$rs_decode_data->{'id'}; // idenfiant du product complement pour la variable
-                if($rs_image_count==0){
-                     $this->id_product_image =$rs_decode_data->{'images'}; // idenfiant du product complement pour la variable
-                }else{
-                     $this->id_product_image =$get_product[0]->{'images'};
-                }
-                $this->list_variation =$rs_decode_data->{'variations'}; // variations
-                $encode_product_image=json_encode($this->id_product_image);// il faut forcement re-encoder pour utiliser les donnees de la recuperation decode
-                $id_product_attributes =$rs_decode_data->{'attributes'}; // idenfiant du product complement pour la variable
-                $this->encode_product_attributes = json_encode($id_product_attributes[0]);//color attributes 
-                $this->encode_product_attributes_size = json_encode($id_product_attributes[1]);//attributes sizes
-                return  $this->rs_put_data; 
+            //  $rs_decode_product= json_decode($product);
+            $rs_image_count= count($get_product[0]->{'images'});
+            if($rs_image_count==0){
+            $this->data_single_product =  $this->data_single_product+['images'=> $this->array_image_un]; 
+            }
+            //  $this->data_single_product+['images'=> $this->array_image_un];
+            $this->rs_put_data =json_encode($this->woocommerce->put('products/'.$this->woo_id, $this->data_single_product)); // insertion des donnees .
+            $rs_decode_data = json_decode( $this->rs_put_data);
+            $id_product_insert =$rs_decode_data->{'id'}; // idenfiant du product complement pour la variable
+            if($rs_image_count==0){
+            $this->id_product_image =$rs_decode_data->{'images'}; // idenfiant du product complement pour la variable
+            $t="2";
+            }else{
+            $t="1";
+            $this->id_product_image =$get_product[0]->{'images'};
+            }
+            $this->list_variation =$rs_decode_data->{'variations'}; // variations
+            $encode_product_image=json_encode($this->id_product_image);// il faut forcement re-encoder pour utiliser les donnees de la recuperation decode
+            $id_product_attributes =$rs_decode_data->{'attributes'}; // idenfiant du product complement pour la variable
+            $this->encode_product_attributes = json_encode($id_product_attributes[0]);//color attributes 
+            $this->encode_product_attributes_size = json_encode($id_product_attributes[1]);//attributes sizes
+            //   return  $this->rs_put_data; 
+
+            return   json_encode(array('get'=>$get_product,'t'=>$t, 'add'=>$this->data_single_product,'image'=>$this->array_image_un, 'put'=>json_decode($this->rs_put_data))); 
 
 }
 
@@ -664,29 +673,35 @@ public function variation_post_data(){
                     }
                 }; 
 
+             
                                     $this->v_data =  [
-                                    'description'=>$this->short, 
-                                    'sku'=>  $sku_ ,
-                                    'price'=>$sku_price_,
-                                    'regular_price'=>$sku_price_,
-                                    'sale_price'=>$offer_bulk_sale_price_, 
-                                    'manage_stock'=>true,
-                                    'stock_quantity'=>$stock_quantity_, 
-                                    'downloadable'=>true,
-                                    'downloads'=>$d_download,
-                                    'weight'=>$this->weight,
-                                    'dimensions'=>$this->dimensions,
-                                    'image' =>   $d_image,  
-                                    'attributes' => $d_color
+                                            'description'=>$this->short, 
+                                            'sku'=>  $sku_ ,
+                                            'price'=>$sku_price_,
+                                            'regular_price'=>$sku_price_,
+                                            'sale_price'=>$offer_bulk_sale_price_, 
+                                            'manage_stock'=>true,
+                                            'status'=>'publish',
+                                            'stock_quantity'=>$stock_quantity_, 
+                                            'stock_status'=>'instock',
+                                            'backorders'=>'yes',
+                                            'downloadable'=>true,
+                                            'downloads'=>$d_download,
+                                            'weight'=>$this->weight,
+                                            'dimensions'=>$this->dimensions,
+                                            'image' =>   $d_image,  
+                                            'attributes' => $d_color
 
                                     ];
-                    $this->val_variable[]= $this->woocommerce->post('products/'.$this->woo_id.'/variations',  $this->v_data); 
+            $this->val_variable[]= $this->woocommerce->post('products/'.$this->woo_id.'/variations',  $this->v_data); 
 
         unset($d_image);
         unset($d_color);
         unset($d_download);
         unset($this->brandname);
     }
+  
+
     // prepare insertion categories 
                 $en_categories =json_encode($this->categories_update); 
                 $data_update = [
@@ -732,8 +747,7 @@ public function variation_put_data(){
                               
                             $val_variable = ''; 
                             $rs_data_json = '';
-
-                // for de l'ensembles des variations
+ 
      for($v=0;$v<$c_n_variation; $v++){
         
                                 $parse_url= parse_url($v_inser[$v]['ae_sku_property_dtos']['ae_sku_property_d_t_o'][0]['sku_image']); 
@@ -790,6 +804,7 @@ public function variation_put_data(){
   
                         for($im=0;$im<$count_i;$im++){
                         $i_encode = json_encode($this->id_product_image[$im]);
+
                         $i_decode = json_decode($i_encode);
                         $name_ref=explode(".",$i_decode->{'name'});
 
@@ -803,6 +818,7 @@ public function variation_put_data(){
                             }
                         }; 
 
+
                                             $this->v_data =  [
                                             'description'=>$this->short, 
                                             'sku'=>  $sku_ ,
@@ -810,7 +826,10 @@ public function variation_put_data(){
                                             'regular_price'=>$sku_price_,
                                             'sale_price'=>$offer_bulk_sale_price_, 
                                             'manage_stock'=>true,
+                                            'status'=>'publish',
                                             'stock_quantity'=>$stock_quantity_, 
+                                            'stock_status'=>'instock',
+                                            'backorders'=>'yes',
                                             'downloadable'=>true,
                                             'downloads'=>$d_download,
                                             'weight'=>$this->weight,
@@ -819,6 +838,7 @@ public function variation_put_data(){
                                             'attributes' => $d_color
 
                                             ];
+
             if( $c_list_variation>0):
             $this->val_variable[]= $this->woocommerce->put('products/'.$this->woo_id.'/variations/'.$this->list_variation[$v],  $this->v_data); 
             else:
@@ -833,7 +853,7 @@ public function variation_put_data(){
                 unset($this->brandname);
               }
 
-              return  json_encode(array('result'=>$this->val_variable)); 
+             return  json_encode(array('result'=>$this->val_variable,'im'=>$this->id_product_image, "data"=>$this->v_data )); 
 }
 
 

@@ -1,6 +1,17 @@
 jQuery( document ).ready( function ($) {
 	
 
+//var liveToast=  document.getElementById("liveToast")
+//var divToast= document.getElementById("toastPlacement")
+
+///var toastBootstrap =  new bootstrap.Toast(liveToast)
+//var toasttest=  new bootstrap.Toast(divToast)
+var myModal = new bootstrap.Modal($('#exampleModalToggle'));
+
+
+
+
+
             $('#myTab button').on('click', function (e) {
                     e.preventDefault();
                     $(this).tab('show');
@@ -55,7 +66,6 @@ jQuery( document ).ready( function ($) {
                         all_product+=fun.ae_multimedia_info_dto(resultat['rs_product']['result'])
                         all_product+=fun.ae_item_sku_info_d_t_o(resultat['rs_product']['result']['ae_item_sku_info_dtos']['ae_item_sku_info_d_t_o'])
 
-                        var myModal = new bootstrap.Modal($('#exampleModalToggle'));
                         myModal.show(); 
                         $("div.modal-body").html(all_product)
                         if(resultat['active']==0){
@@ -107,19 +117,31 @@ jQuery( document ).ready( function ($) {
                         },
                     "all_update":async function envoyerEnSequence(tableau,n_this,type_update) {
                         console.log("Début de l'envoi séquentiel...");
-
+                           $('#liveToast').toast('show');
+                            $('div.toast-body').html("Start proccess...")
                         for (const [key, value] of tableau.entries()) {
                         try {
                         console.log("Envoi en cours pour l'élément:"+ value.id);
 
                         // Attend la réponse AJAX avant de continuer la boucle
+                        $('div.update'+value.id).addClass('shadow-lg border border-success')
                         const reponse = await fun.all_update_sync(value.woo_id,value.id,value.product,n_this,type_update); 
                         var progress= ((key+1)*100)/tableau.length
                         $("div.progress").attr('aria-valuenow',progress); 
                         $("div.progress-bar").attr("style","width:"+progress+"%").html(progress.toFixed(2)+"%"); 
-                        $('div.card'+value.id).fadeOut(10, "linear").remove()
+                        $('div#liveToast').toast('show');
+                        $('div.toast-body').html("<div class='alert alert-success' >Product : "+value.product+" Successfully !!!</div>" )
+                        $('div.card'+value.id).remove()
                         console.log("Succès pour l'élément"+value.id+' Réponse :'+ reponse +"----"+progress);
                         } catch (erreur) {
+                        var progress= ((key+1)*100)/tableau.length
+                        $("div.progress").attr('aria-valuenow',progress); 
+                        $("div.progress-bar").attr("style","width:"+progress+"%").html(progress.toFixed(2)+"%");      
+                        $('div#liveToast').toast('show');
+                        fun.delete(value.product,value.id,"proccess",false); 
+                        $('div#liveToast').attr('role','status').attr('aria-live','polite')
+                        $('div.toast-body').html("<div class='alert alert-warning' >Product : "+value.product+" Error !!!  delete this product</div>" )
+                        $('div.card'+value.id).remove()
                         console.error("Échec pour l'élément"+ value.id+"Erreur :"+ erreur);
                         // Optionnel : vous pouvez ajouter un 'break;' ici si vous voulez stopper 
                         // tout le processus dès qu'une requête échoue.
@@ -127,7 +149,8 @@ jQuery( document ).ready( function ($) {
 
                         }
                         $("div.progress-bar").attr("style","width:0%").html(""); 
-                        fun.list_product_active(0); 
+                       // fun.list_product_active(""); 
+                        fun.pagination('','','',0,'nx');
                        // n_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
                         },
                     "all_update_product":function all_product_woo_product(id_product_woo,id_product_active,product,btn_this,type_update){
@@ -158,9 +181,10 @@ jQuery( document ).ready( function ($) {
                                 btn_this.html('<i class="fa-solid fa-arrows-rotate"></i>').removeClass('disabled');
 
                                 }else if(type_update=="ProductInsert"){
-
+                                     $("div.update"+id_product_active).addClass("border border-success shadow-lg m-0")
                                 $('div.card'+id_product_active).addClass("border border-success shadow-lg m-0").fadeOut(10,"linear").remove()
                                 //  fun.list_product_active(0);  
+
                                 }
                             }
 
@@ -176,10 +200,15 @@ jQuery( document ).ready( function ($) {
 							dataType:"json",
 							data: { url_link:$url_link, token:$token , id_product:id_p},
 							beforeSend:function(){
+                                if($token=='delete'){
                                   d_this.html(css_animation.spinner)
+                                }else{
+                                 $('div#liveToast').toast('show');
+                                $('div.toast-body').html(css_animation.spinner+
+                                    "<div class='alert alert-danger' >Product : "+$url_link+" Wait delete is proccess ... ")                                }
 							},
 							success:function(resultat){
-
+                                if($token=='delete'){
                                 if(resultat['code']=='200'){
                                     var myModal = new bootstrap.Modal($('#exampleModalToggle')[0]);
                        
@@ -187,7 +216,14 @@ jQuery( document ).ready( function ($) {
                                     $("div."+resultat['rs_delete']).fadeOut( "slow" ).remove()
                                    
                                 }
-                
+                              }
+                              else{
+
+                                     
+                          $('div#liveToast').toast('show');
+                     
+                        $('div.toast-body').html("<div class='alert alert-success' >Product : "+$url_link+" delete successfully </div>" )
+                              }
 					    	}
 						 })
 							
